@@ -1,1 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumo Executivo - Vistoria de Obras</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a4d3a 0%, #1a5f4a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0a4d3a 0%, #1a5f4a 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .obras-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .obra-card {
+            background: #1a5f4a;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .obra-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .obra-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+            border-bottom: 3px solid #00ff88;
+            padding-bottom: 10px;
+        }
+
+        .status-geral {
+            margin-bottom: 25px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00ff88;
+        }
+
+        .status-item.liberadas {
+            border-left-color: #66ffaa;
+            background: rgba(102, 255, 170, 0.1);
+        }
+
+        .status-item.nao-liberadas {
+            border-left-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .status-item.estoque {
+            border-left-color: #66ffaa;
+            background: rgba(102, 255, 170, 0.1);
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .status-value {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: #00ff88;
+        }
+
+        .distribuicao {
+            margin-top: 20px;
+        }
+
+        .distribuicao h4 {
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-size: 1.1em;
+        }
+
+        .dist-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #ffffff;
+        }
+
+        .dist-item span:last-child {
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .torres-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .torres-info h4 {
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .torres-info p {
+            color: #ffffff;
+            opacity: 0.9;
+        }
+
+        .torres-info strong {
+            color: #00ff88;
+        }
+
+        .analise-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #1a5f4a;
+            border-radius: 15px;
+        }
+
+        .analise-section h2 {
+            color: #ffffff;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .acoes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .acoes-card {
+            background: #0a4d3a;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .acoes-card h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .acoes-card ul {
+            list-style: none;
+        }
+
+        .acoes-card li {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00ff88;
+            font-size: 0.95em;
+            color: #ffffff;
+        }
+
+        .acoes-card li strong {
+            color: #00ff88;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #66ffaa);
+            transition: width 0.3s ease;
+        }
+
+        .caucaia-progress {
+            background: linear-gradient(90deg, #00ff88, #66ffaa);
+        }
+
+        .belvedere-progress {
+            background: linear-gradient(90deg, #00ff88, #66ffaa);
+        }
+
+        @media (max-width: 768px) {
+            .obras-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .acoes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 RESUMO EXECUTIVO</h1>
+            <p>Vistoria de Obras - Relatório de Acompanhamento</p>
+        </div>
+
+        <div class="content">
+            <div class="obras-grid">
+                <!-- CAUCAIA -->
+                <div class="obra-card">
+                    <h2 class="obra-title">🏗️ OBRA VITÓRIA CAUCAIA</h2>
+                    
+                    <div class="status-geral">
+                        <div class="status-item">
+                            <span class="status-label">Total de Unidades</span>
+                            <span class="status-value">272</span>
+                        </div>
+                        <div class="status-item liberadas">
+                            <span class="status-label">Unidades Liberadas</span>
+                            <span class="status-value">80 (29,4%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill caucaia-progress" style="width: 29.4%"></div>
+                        </div>
+                        <div class="status-item nao-liberadas">
+                            <span class="status-label">Não Liberados</span>
+                            <span class="status-value">192 (70,6%)</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Estoque</span>
+                            <span class="status-value">0</span>
+                        </div>
+                    </div>
+
+                    <div class="distribuicao">
+                        <h4>📊 Distribuição por Status</h4>
+                        <div class="dist-item">
+                            <span>Agendados</span>
+                            <span>29 (10,7%)</span>
+                        </div>
+                        <div class="dist-item">
+                            <span>Termos Assinados</span>
+                            <span>23 (8,5%)</span>
+                        </div>
+                        <div class="dist-item">
+                            <span>Revistorias</span>
+                            <span>2 (0,7%)</span>
+                        </div>
+                        <div class="dist-item">
+                            <span>Não Agendados</span>
+                            <span>26 (9,6%)</span>
+                        </div>
+                    </div>
+
+                    <div class="torres-info">
+                        <h4>🏢 Configuração das Torres</h4>
+                        <p><strong>14 Torres:</strong> Torres 01-10 (20 unidades cada), Torres 11-12 (16 unidades cada), Torres 13-14 (20 unidades cada)</p>
+                    </div>
+                </div>
+
+                <!-- BELVEDERE -->
+                <div class="obra-card">
+                    <h2 class="obra-title">🏗️ OBRA BELVEDERE CONDOMÍNIO CLUBE</h2>
+                    
+                    <div class="status-geral">
+                        <div class="status-item">
+                            <span class="status-label">Total de Unidades</span>
+                            <span class="status-value">362</span>
+                        </div>
+                        <div class="status-item liberadas">
+                            <span class="status-label">Unidades Liberadas</span>
+                            <span class="status-value">178 (49,2%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill belvedere-progress" style="width: 49.2%"></div>
+                        </div>
+                        <div class="status-item nao-liberadas">
+                            <span class="status-label">Não Liberados</span>
+                            <span class="status-value">102 (28,2%)</span>
+                        </div>
+                        <div class="status-item estoque">
+                            <span class="status-label">Estoque</span>
+                            <span class="status-value">82 (22,7%)</span>
+                        </div>
+                    </div>
+
+                    <div class="distribuicao">
+                        <h4>📊 Distribuição por Status</h4>
+                        <div class="dist-item">
+                            <span>Agendados</span>
+                            <span>51 (14,1%)</span>
+                        </div>
+                        <div class="dist-item">
+                            <span>Termos Assinados</span>
+                            <span>81 (22,4%)</span>
+                        </div>
+                        <div class="dist-item">
+                            <span>Revistorias</span>
+                            <span>7 (1,9%)</span>
+                        </div>
+                        <div class="dist-item">
+                            <span>Não Agendados</span>
+                            <span>39 (10,8%)</span>
+                        </div>
+                    </div>
+
+                    <div class="torres-info">
+                        <h4>🏢 Configuração das Torres</h4>
+                        <p><strong>3 Torres:</strong> Torre 01 (118 unidades), Torre 02 (120 unidades), Torre 03 (124 unidades)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analise-section">
+                <h2>📈 ANÁLISE COMPARATIVA</h2>
+                
+                <div class="acoes-grid">
+                    <div class="acoes-card">
+                        <h3>🎯 Ações de Acompanhamento</h3>
+                        <ul>
+                            <li><strong>Intensificar agendamentos</strong> para reduzir o número de unidades não agendadas e acelerar o processo</li>
+                            <li><strong>Acelerar processo de liberação</strong> no Caucaia para reduzir o alto percentual de não liberados</li>
+                            <li><strong>Manter foco</strong> na conclusão das revistorias pendentes em ambas as obras</li>
+                            <li><strong>Acompanhar</strong> o processo de assinatura de termos para garantir fluxo contínuo</li>
+                        </ul>
+                    </div>
+
+                    <div class="acoes-card">
+                        <h3>📋 Status Atual</h3>
+                        <ul>
+                            <li><strong>Caucaia:</strong> Em fase inicial com 29,4% de liberação</li>
+                            <li><strong>Belvedere:</strong> Em fase intermediária com 49,2% de liberação e estoque significativo disponível</li>
+                            <li><strong>Prioridade:</strong> Focar em aumentar o número de agendamentos nas duas obras</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
